@@ -71,7 +71,7 @@ else {
       </div>
 
       <div className="col-span-4 p-1">
-        <div className="container h-150 overflow-auto p-10">
+        <div className="container h-140 overflow-auto p-10">
           <div className="text-white">
             <ul>
               {
