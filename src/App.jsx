@@ -1,6 +1,8 @@
 import { useDebugValue, useEffect, useRef, useState } from "react";
 import "./App.css";
 import Answer from "./components/Answer";
+import RecentSearch from "./components/recentSearch";
+import QuestionAnswer from "./QuestionAnswer";
 
 function App() {
   const [question, setQuestion] = useState("");
@@ -76,7 +78,7 @@ function App() {
   };
 
   const isEnter = (event) => {
-    console.log(event.key);
+    //console.log(event.key);
     if (event.key == "Enter") {
       askQuestion();
     }
@@ -86,42 +88,45 @@ function App() {
     askQuestion();
   }, [selectedHistory]);
 
-  return (
-    <div className="grid grid-cols-5 h-screen text-center ">
-      <div className="col-span-1 bg-zinc-800  ">
-        <h1 className="p-3 text-white text-xl flex text-center justify-center  ">
-          <span>Recent Search</span>
-          <button onClick={clearhistory} className="cursor-pointer">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              height="24px"
-              viewBox="0 -960 960 960"
-              width="24px"
-              fill="#e3e3e3"
-            >
-              <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z" />
-            </svg>
-          </button>
-        </h1>
-        <ul className="text-left overflow-auto">
-          {recentHistory &&
-            recentHistory.map((item) => (
-              <li
-                onClick={() => setSelectedHistory(item)}
-                className="p-1 pl-4 truncate  text-zinc-400 cursor-pointer hover:bg-zinc-700 hover:text-white  "
-              >
-                {item}
-              </li>
-            ))}
-        </ul>
-      </div>
+  // dark maode state
+  const [darkMode, setDarkMode] = useState("dark");
 
+
+
+
+  useEffect(()=>
+  {
+//console.log(darkMode);
+if(darkMode=='dark')
+{
+document.documentElement.classList.add('dark')
+}
+else {
+document.documentElement.classList.remove('dark')
+
+}
+  
+  },[darkMode])
+  return (
+ <div className={darkMode=='dark'?'dark':'light'}>
+
+    <div className="grid grid-cols-5 h-screen text-center ">
+      <select onChange={(event)=>setDarkMode(event.target.value)} className="dark:text-white text-black fixed text-5 bottom-0 p-4">
+        <option className="text-black "  value="dark">Dark</option>
+        <option className="text-black " value="light">Light</option>
+      </select>
+
+      <RecentSearch
+        recentHistory={recentHistory}
+        setSelectedHistory={setSelectedHistory}
+        setRecentHistory={setRecentHistory}
+      />
       <div className="col-span-4 p-1">
         {loder ? (
           <div role="status">
             <svg
               aria-hidden="true"
-              class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600"
+              className="inline w-8 h-8 dark:text-gray-200 text-zinc-800 animate-spin dark:text-gray-600 fill-purple-600"
               viewBox="0 0 100 101"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
@@ -135,50 +140,19 @@ function App() {
                 fill="currentFill"
               />
             </svg>
-            <span class="sr-only">Loading...</span>
+            <span className="sr-only">Loading...</span>
           </div>
         ) : null}
         <div ref={scrollToAns} className="container h-140 overflow-auto p-10">
-          <div className="text-white">
+          <div className="dark:text-white text-zinc-800 ">
             <ul>
               {result.map((item, ind) => (
-                <div
-                  key={ind + Math.random()}
-                  className={item.type == "q" ? "flex justify-end" : ""}
-                >
-                  {item.type == "q" ? (
-                    <li
-                      key={ind + Math.random()}
-                      className=" text-right p-1 border-5 bg-zinc-700 border-zinc-700  rounded-bl-3xl rounded-tl-3xl rounded-br-3xl"
-                    >
-                      <Answer
-                        ans={item.text}
-                        type={item.type}
-                        totalResult={1}
-                        ind={ind}
-                      />
-                    </li>
-                  ) : (
-                    item.text.map((ansItem, ansInd) => (
-                      <li
-                        key={ansInd + Math.random()}
-                        className="text-left p-3"
-                      >
-                        <Answer
-                          ans={ansItem}
-                          totalResult={item.length}
-                          type={item.type}
-                          ind={ansInd}
-                        />
-                      </li>
-                    ))
-                  )}
-                </div>
+                <QuestionAnswer key={ind} item={item} ind={ind} />
               ))}
             </ul>
           </div>
         </div>
-        <div className="bg-zinc-800  w-1/2 p-1 pr-5 text-white m-auto rounded-4xl border border-zinc-600 flex h-16">
+        <div className="dark:bg-zinc-800 bg-blue-200 w-1/2 p-1 pr-5 dark:text-white text-zinc-800 m-auto rounded-4xl border border-zinc-600 flex h-16">
           <input
             type="text"
             value={question}
@@ -190,6 +164,7 @@ function App() {
           <button onClick={askQuestion}>Ask</button>
         </div>
       </div>
+    </div>
     </div>
   );
 }
